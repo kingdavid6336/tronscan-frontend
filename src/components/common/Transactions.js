@@ -40,7 +40,7 @@ class Transactions extends React.Component {
   }
 
   componentDidMount() {
-    // this.loadTransactions();
+    this.loadTransactions();
   }
 
   componentDidUpdate(prevProps) {
@@ -303,7 +303,7 @@ class Transactions extends React.Component {
   render() {
 
     let {transactions, total, rangeTotal, loading, EmptyState = null} = this.state;
-    let {intl, isinternal, address = false, filter: {contract}} = this.props;
+    let {intl, isinternal, address = false, filter: {contract, block}} = this.props;
     let column = !isinternal? this.customizedColumn():
                               this.trc20CustomizedColumn();
     let tableInfo = intl.formatMessage({id: 'view_total'}) + ' ' + total + ' ' + intl.formatMessage({id: 'transactions_unit'})
@@ -318,16 +318,16 @@ class Transactions extends React.Component {
     // }
 
     return (
-      <div className={"token_black table_pos mt-5" }>
+      <div className={`token_black table_pos ${address? 'mt-5': ''}` }>
           {loading && <div className="loading-style"><TronLoader/></div>}
           
           <div className="d-flex justify-content-between w-100"  style={{position: "absolute", left: 0, top: '-28px'}}>
             {(total && contract && isinternal)? <div className="d-flex align-items-center">
               <div className="question-mark mr-2"><i>?</i></div><span className="flex-1">{tu('interTrx_tip')}</span>
             </div>: ''}
-            <DateSelect onDateOk={(start,end) => this.onDateOk(start,end)} dataStyle={{marginTop: '-1.6rem'}}/>
+            {address && <DateSelect onDateOk={(start,end) => this.onDateOk(start,end)} dataStyle={{marginTop: '-1.6rem'}}/>}
           </div>
-          {!loading && <TotalInfo total={total} rangeTotal={rangeTotal} typeText="transactions_unit" common={!address} top={(!contract)? '-28px': '10px'} selected/>}
+          {!loading && <TotalInfo total={total} rangeTotal={rangeTotal} typeText="transactions_unit" common={!address} top={(contract && '10px') || (!address && '20px') || (!contract&& !block && '-28px')} selected={address}/>}
           
           {
               (!loading && transactions.length === 0)?
